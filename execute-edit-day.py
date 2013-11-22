@@ -27,8 +27,6 @@ def usernam(name):
 # username = usernam(raw_input("What's your name? "))
 # password = getpass.getpass()
 
-username = "jguzman@costco.com"
-password = "Jorg98951"
 
 
 
