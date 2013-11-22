@@ -26,6 +26,7 @@ username = usernam(raw_input("What's your name? "))
 password = getpass.getpass()
 
 success = "MISSION: Accomplished."
+prompt = '==> '
 
 def pick_country(country):
 	if country == 1:
@@ -66,15 +67,521 @@ def selected_can():
 	elif selected_script == 3:
 		single_category_can()
 
-
+# still needs fixing
 def single_category_us():
-	pass
+	spread_sheet = "FY14 CATEGORY HOMEPAGE LINEUP US"
+
+
+	"""This is the full list of category tabs on the google doc spreadsheet"""
+	category_list = ["ecomgraphics", "Appliances", "Baby & Kids", "Clothing&Fashion", "Computers", "Electronics", "Food Gift Baskets", "Funeral", "Furniture", "Hardware, Auto Tires", "Health Beauty", "Home Decor", "Gift Card, Tickets Floral", "Jewelry", "Office Products", "Patio, Lawn, Garden", "Pet Supplies", "Sports Fitness"]
+	print ""
+	print 'Which day of the week is this for? Please choose from the following: '
+	print "-" * 60
+	print "This week:" 
+	print ' 0 : "Monday"'
+	print ' 1 : "Tuesday"'
+	print ' 2 : "Wednesday"'
+	print ' 3 : "Thursday"'
+	print ' 4 : "Friday"'
+	print ' 5 : "Saturday"'
+	print ' 6 : "Sunday"'
+	print ""
+	print "Next week:" 
+	print ' 7 : "Monday"'
+	print ' 8 : "Tuesday"'
+	print ' 9 : "Wednesday"'
+	print '10 : "Thursday"'
+	print '11 : "Friday"'
+	print '12 : "Saturday"'
+	print '13 : "Sunday"'
+	print "-" * 60
+	print ""
+	day_selection = int(raw_input(prompt))
+	print ""
+	print 'Which category needs updating? Please choose from the following: '
+	print "-" * 60
+	print ' 1: Appliances'
+	print ' 2: Baby & Kids'
+	print ' 3: Clothing&Fashion'
+	print ' 4: Computers'
+	print ' 5: Electronics'
+	print ' 6: Food Gift Baskets'
+	print ' 7: Funeral'
+	print ' 8: Furniture'
+	print ' 9: Hardware, Auto Tires'
+	print '10: Health Beauty'
+	print '11: Home Decor'
+	print '12: Gift Card, Tickets Floral'
+	print '13: Jewelry'
+	print '14: Office Products'
+	print '15: Patio, Lawn, Garden'
+	print '16: Pet Supplies'
+	print '17: Sports Fitness'
+	print ""
+	selection = int(raw_input("==> "))
+	selected = category_list[selection]
+	del category_list[selection]
+	print "you have chosen", selected
+
+
+	skipped_list = category_list
+	prop_col = ("hero text", "feature 1 text", "feature 2 text", "feature category actual filename", "product id or search term")
+	template_name = 'tmp.html'
+
+
+	days_ahead = 0 - datetime.date.today().weekday()
+	if days_ahead <= 0:
+	    days_ahead += day_selection
+	next_monday = datetime.date.today() + datetime.timedelta(days_ahead)
+	date_row = next_monday.strftime("%-m/%-d/%Y")
+	print "next monday is", date_row
+	data = OrderedDict({})
+
+	print "login as", username
+	print "open spread sheet", spread_sheet
+	for worksheet in gspread.login(username, password).open(spread_sheet).worksheets():
+	    title = worksheet.title
+	    title = title.lstrip()
+	    title = title.rstrip()
+	    if not title in skipped_list:
+	        print "reading worksheet", title, "..."
+
+	        read_col_list = []
+	        col = 1
+	        for value in worksheet.row_values(3):
+	            if not value is None:
+	                value.lstrip()
+	                value.rstrip()
+	                if value.lower().startswith(prop_col):
+	                    read_col_list.append(col)
+	            col += 1
+	        if not len(read_col_list) == 18:
+	            print "invalid column data on worksheet", title
+	            sys.exit(1)
+
+	        read_row = -1
+	        row = 1
+	        for value in worksheet.col_values(1):
+	            if not value is None:
+	                value.lstrip()
+	                value.rstrip()
+	                if value == date_row:
+	                    read_row = row
+	                    # print value
+	            row += 1
+	        if read_row == -1:
+	            print "invalid row data on worksheet", title
+	            sys.exit(1)
+
+	        line = []
+	        col = 1
+	        value_list = worksheet.row_values(read_row)
+	        for read_col in read_col_list:
+	            value = value_list[read_col-1]
+	            # print value
+	            if not value is None:
+	                value.lstrip()
+	                value.rstrip()
+	            else:
+	                value = 'TBD'
+	            if col%3 == 0:
+	                if re.match("^[0-9]+$", value):
+	                    value = "/.product.{0}.html".format(value)
+	                elif re.match("^[a-zA-Z]+[0-9]+$", value) or re.match("^[a-zA-Z]+$", value):
+	                    value = "/CatalogSearch?langId=-1&storeId=10301&catalogId=10701&keyword={0}&sortBy=PriceMax%7C1".format(value)
+
+	            line.append(value)
+	            col += 1
+	        key = 'cat-'
+	        key += title.lower().replace(' ', '-').replace('&', '').replace(',', '-').replace('/', '-')
+	        key += '-hero-'
+	        key += next_monday.strftime("%y%m%d")
+	        data[key] = line
+
+	output_name = '%s-%s.html' % (selected.lower(), next_monday.strftime("%y%m%d"))
+
+	settings.configure()
+	print "reading template from", template_name, "..."
+	template_file = open(template_name, "r").read()
+	output_file = codecs.open(output_name, mode="w", encoding='utf-8')
+	print "filling data into", output_name, "..."
+	template = Template(template_file)
+	content = template.render(Context({'data': data}))
+	output_file.write(content)
+	sys.exit(0)
 
 def next_week_us():
-	pass
+	spread_sheet = "FY14 CATEGORY HOMEPAGE LINEUP US"
+	skipped_list = ["ecomgraphics"]
+	prop_col = ("hero text", "feature 1 text", "feature 2 text", "feature category actual filename", "product id or search term")
+	template_name = 'tmp.html'
+	
+
+	days_ahead = 0 - datetime.date.today().weekday()
+	if days_ahead <= 0:
+	    days_ahead += 7
+	next_monday = datetime.date.today() + datetime.timedelta(days_ahead)
+	date_row = next_monday.strftime("%-m/%-d/%Y")
+	print "next monday is", date_row
+	data = OrderedDict({})
+
+	print "login as", username
+	print "open spread sheet", spread_sheet
+	for worksheet in gspread.login(username, password).open(spread_sheet).worksheets():
+	    title = worksheet.title
+	    title = title.lstrip()
+	    title = title.rstrip()
+	    if not title in skipped_list:
+	        print "reading worksheet", title, "..."
+
+	        read_col_list = []
+	        col = 1
+	        for value in worksheet.row_values(2):
+	            if not value is None:
+	                value.lstrip()
+	                value.rstrip()
+	                if value.lower().startswith(prop_col):
+	                    read_col_list.append(col)
+	            col += 1
+	        if not len(read_col_list) == 9:
+	            print "invalid column data on worksheet", title
+	            sys.exit(1)
+
+	        read_row = -1
+	        row = 1
+	        for value in worksheet.col_values(1):
+	            if not value is None:
+	                value.lstrip()
+	                value.rstrip()
+	                if value == date_row:
+	                    read_row = row
+	            row += 1
+	        if read_row == -1:
+	            print "invalid row data on worksheet", title
+	            sys.exit(1)
+
+	        line = []
+	        col = 1
+	        value_list = worksheet.row_values(read_row)
+	        for read_col in read_col_list:
+	            value = value_list[read_col-1]
+	            if not value is None:
+	                value.lstrip()
+	                value.rstrip()
+	            else:
+	                value = 'TBD'
+	            if col%3 == 0:
+	                if re.match("^[0-9]+$", value):
+	                    value = "/.product.{0}.html".format(value)
+	                elif re.match("^[a-zA-Z]+[0-9]+$", value) or re.match("^[a-zA-Z]+$", value):
+	                    value = "/CatalogSearch?langId=-1&storeId=10301&catalogId=10701&keyword={0}&sortBy=PriceMax%7C1".format(value)
+
+	            line.append(value)
+	            col += 1
+	        key = 'cat-'
+	        key += title.lower().replace(' ', '-').replace('&', '-').replace(' & ', '-').replace(',', '-').replace('/', '-')
+	        key += next_monday.strftime("%y%m%d")
+	        data[key] = line
+	output_name = 'us-%s.html' % next_monday.strftime("%y%m%d")
+	settings.configure()
+	print "reading template from", template_name, "..."
+	template_file = open(template_name, "r").read()
+	output_file = codecs.open(output_name, mode="w", encoding='utf-8')
+	print "filling data into", output_name, "..."
+	template = Template(template_file)
+	content = template.render(Context({'data': data}))
+	output_file.write(content)
+	print success
+	sys.exit(0)
 
 def this_week_us():
-	pass
+	spread_sheet = "FY14 CATEGORY HOMEPAGE LINEUP US"
+	skipped_list = ["ecomgraphics"]
+	prop_col = ("hero text", "feature 1 text", "feature 2 text", "feature category actual filename", "product id or search term")
+	template_name = 'tmp.html'
+	output_name = 'main.html'
+
+
+	"""this area is for the future date feature of the Feature Categories"""
+	# create variable 'days_ahead' which starts at 0  and then the fuction for today's date is established before the IF-Statement
+	days_ahead = 0 - datetime.date.today().weekday()
+	# if 'days_ahead' is less than 0 is True...
+	if days_ahead <= 0:
+	    # Having 7 days goes to next Monday
+	    # set the 'days_ahead' variable to the current 'days_ahead' + 7
+	    days_ahead += 0
+	# set the variable 'next_monday' to today's date/time + the difference in days between today and next Monday
+	next_monday = datetime.date.today() + datetime.timedelta(days_ahead)
+	# set the variable 'date_row' in the format of MM/DD/YYYY
+	date_row = next_monday.strftime("%-m/%-d/%Y")
+	# print the string followed by the date_row variable
+	print "This week's Monday was", date_row
+
+
+	"""this area does all the work of logging in to the specified Google Doc, grabbing the names of the tabs, retrieving the data on the spreadsheet and reformating it"""
+
+
+	data = OrderedDict({})
+
+	print "login as", username
+	print "open spread sheet", spread_sheet
+	for worksheet in gspread.login(username, password).open(spread_sheet).worksheets():
+	    title = worksheet.title
+	    title = title.lstrip()
+	    title = title.rstrip()
+	    if not title in skipped_list:
+	        print "reading worksheet", title, "..."
+
+	        read_col_list = []
+	        col = 1
+	        for value in worksheet.row_values(2):
+	            if not value is None:
+	                value.lstrip()
+	                value.rstrip()
+	                if value.lower().startswith(prop_col):
+	                    read_col_list.append(col)
+	            col += 1
+	        if not len(read_col_list) == 9:
+	            print "invalid column data on worksheet", title
+	            sys.exit(1)
+
+	        read_row = -1
+	        row = 1
+	        for value in worksheet.col_values(1):
+	            if not value is None:
+	                value.lstrip()
+	                value.rstrip()
+	                if value == date_row:
+	                    read_row = row
+	            row += 1
+	        if read_row == -1:
+	            print "invalid row data on worksheet", title
+	            sys.exit(1)
+
+	        line = []
+	        col = 1
+	        value_list = worksheet.row_values(read_row)
+	        for read_col in read_col_list:
+	            value = value_list[read_col-1]
+	            if not value is None:
+	                value.lstrip()
+	                value.rstrip()
+	            else:
+	                value = 'TBD'
+	            if col%3 == 0:
+	                if re.match("^[0-9]+$", value):
+	                    value = "/.product.{0}.html".format(value)
+	                elif re.match("^[a-zA-Z]+[0-9]+$", value) or re.match("^[a-zA-Z]+$", value):
+	                    value = "/CatalogSearch?langId=-1&storeId=10301&catalogId=10701&keyword={0}&sortBy=PriceMax%7C1".format(value)
+
+	            line.append(value)
+	            col += 1
+	        key = 'cat-'
+	        key += title.lower().replace(' ', '-').replace('&', '').replace(',', '-').replace('/', '-')
+	        key += '-hero-'
+	        key += next_monday.strftime("%y%m%d")
+	        data[key] = line
+
+	output_name = 'us-%s.html' % next_monday.strftime("%y%m%d")
+	settings.configure()
+	print "reading template from", template_name, "..."
+	template_file = open(template_name, "r").read()
+	output_file = codecs.open(output_name, mode="w", encoding='utf-8')
+	print "filling data into", output_name, "..."
+	template = Template(template_file)
+	content = template.render(Context({'data': data}))
+	output_file.write(content)
+	print success
+	sys.exit(0)
+
+"""need to finish these"""
+# def single_category_subs_us():
+# 	pass
+
+# def next_week_subs_us():
+# 	spread_sheet = "FY14 CATEGORY HOMEPAGE LINEUP US"
+# 	skipped_list = ["ecomgraphics"]
+# 	prop_col = ("hero text", "feature 1 text", "feature 2 text", "feature category actual filename", "product id or search term")
+# 	template_name = 'tmp.html'
+	
+
+# 	days_ahead = 0 - datetime.date.today().weekday()
+# 	if days_ahead <= 0:
+# 	    days_ahead += 7
+# 	next_monday = datetime.date.today() + datetime.timedelta(days_ahead)
+# 	date_row = next_monday.strftime("%-m/%-d/%Y")
+# 	print "next monday is", date_row
+# 	data = OrderedDict({})
+
+# 	print "login as", username
+# 	print "open spread sheet", spread_sheet
+# 	for worksheet in gspread.login(username, password).open(spread_sheet).worksheets():
+# 	    title = worksheet.title
+# 	    title = title.lstrip()
+# 	    title = title.rstrip()
+# 	    if not title in skipped_list:
+# 	        print "reading worksheet", title, "..."
+
+# 	        read_col_list = []
+# 	        col = 1
+# 	        for value in worksheet.row_values(2):
+# 	            if not value is None:
+# 	                value.lstrip()
+# 	                value.rstrip()
+# 	                if value.lower().startswith(prop_col):
+# 	                    read_col_list.append(col)
+# 	            col += 1
+# 	        if not len(read_col_list) == 9:
+# 	            print "invalid column data on worksheet", title
+# 	            sys.exit(1)
+
+# 	        read_row = -1
+# 	        row = 1
+# 	        for value in worksheet.col_values(1):
+# 	            if not value is None:
+# 	                value.lstrip()
+# 	                value.rstrip()
+# 	                if value == date_row:
+# 	                    read_row = row
+# 	            row += 1
+# 	        if read_row == -1:
+# 	            print "invalid row data on worksheet", title
+# 	            sys.exit(1)
+
+# 	        line = []
+# 	        col = 1
+# 	        value_list = worksheet.row_values(read_row)
+# 	        for read_col in read_col_list:
+# 	            value = value_list[read_col-1]
+# 	            if not value is None:
+# 	                value.lstrip()
+# 	                value.rstrip()
+# 	            else:
+# 	                value = 'TBD'
+# 	            if col%3 == 0:
+# 	                if re.match("^[0-9]+$", value):
+# 	                    value = "/.product.{0}.html".format(value)
+# 	                elif re.match("^[a-zA-Z]+[0-9]+$", value) or re.match("^[a-zA-Z]+$", value):
+# 	                    value = "/CatalogSearch?langId=-1&storeId=10301&catalogId=10701&keyword={0}&sortBy=PriceMax%7C1".format(value)
+
+# 	            line.append(value)
+# 	            col += 1
+# 	        key = 'cat-'
+# 	        key += title.lower().replace(' ', '-').replace('&', '-').replace(' & ', '-').replace(',', '-').replace('/', '-')
+# 	        key += next_monday.strftime("%y%m%d")
+# 	        data[key] = line
+# 	output_name = 'us-%s.html' % next_monday.strftime("%y%m%d")
+# 	settings.configure()
+# 	print "reading template from", template_name, "..."
+# 	template_file = open(template_name, "r").read()
+# 	output_file = codecs.open(output_name, mode="w", encoding='utf-8')
+# 	print "filling data into", output_name, "..."
+# 	template = Template(template_file)
+# 	content = template.render(Context({'data': data}))
+# 	output_file.write(content)
+# 	print success
+# 	sys.exit(0)
+
+# def this_week_subs_us():
+# 	spread_sheet = "FY14 CATEGORY HOMEPAGE LINEUP US"
+# 	skipped_list = ["ecomgraphics"]
+# 	prop_col = ("hero text", "feature 1 text", "feature 2 text", "feature category actual filename", "product id or search term")
+# 	template_name = 'tmp.html'
+# 	output_name = 'main.html'
+
+
+# 	"""this area is for the future date feature of the Feature Categories"""
+# 	# create variable 'days_ahead' which starts at 0  and then the fuction for today's date is established before the IF-Statement
+# 	days_ahead = 0 - datetime.date.today().weekday()
+# 	# if 'days_ahead' is less than 0 is True...
+# 	if days_ahead <= 0:
+# 	    # Having 7 days goes to next Monday
+# 	    # set the 'days_ahead' variable to the current 'days_ahead' + 7
+# 	    days_ahead += 0
+# 	# set the variable 'next_monday' to today's date/time + the difference in days between today and next Monday
+# 	next_monday = datetime.date.today() + datetime.timedelta(days_ahead)
+# 	# set the variable 'date_row' in the format of MM/DD/YYYY
+# 	date_row = next_monday.strftime("%-m/%-d/%Y")
+# 	# print the string followed by the date_row variable
+# 	print "This week's Monday was", date_row
+
+
+# 	"""this area does all the work of logging in to the specified Google Doc, grabbing the names of the tabs, retrieving the data on the spreadsheet and reformating it"""
+
+
+# 	data = OrderedDict({})
+
+# 	print "login as", username
+# 	print "open spread sheet", spread_sheet
+# 	for worksheet in gspread.login(username, password).open(spread_sheet).worksheets():
+# 	    title = worksheet.title
+# 	    title = title.lstrip()
+# 	    title = title.rstrip()
+# 	    if not title in skipped_list:
+# 	        print "reading worksheet", title, "..."
+
+# 	        read_col_list = []
+# 	        col = 1
+# 	        for value in worksheet.row_values(2):
+# 	            if not value is None:
+# 	                value.lstrip()
+# 	                value.rstrip()
+# 	                if value.lower().startswith(prop_col):
+# 	                    read_col_list.append(col)
+# 	            col += 1
+# 	        if not len(read_col_list) == 9:
+# 	            print "invalid column data on worksheet", title
+# 	            sys.exit(1)
+
+# 	        read_row = -1
+# 	        row = 1
+# 	        for value in worksheet.col_values(1):
+# 	            if not value is None:
+# 	                value.lstrip()
+# 	                value.rstrip()
+# 	                if value == date_row:
+# 	                    read_row = row
+# 	            row += 1
+# 	        if read_row == -1:
+# 	            print "invalid row data on worksheet", title
+# 	            sys.exit(1)
+
+# 	        line = []
+# 	        col = 1
+# 	        value_list = worksheet.row_values(read_row)
+# 	        for read_col in read_col_list:
+# 	            value = value_list[read_col-1]
+# 	            if not value is None:
+# 	                value.lstrip()
+# 	                value.rstrip()
+# 	            else:
+# 	                value = 'TBD'
+# 	            if col%3 == 0:
+# 	                if re.match("^[0-9]+$", value):
+# 	                    value = "/.product.{0}.html".format(value)
+# 	                elif re.match("^[a-zA-Z]+[0-9]+$", value) or re.match("^[a-zA-Z]+$", value):
+# 	                    value = "/CatalogSearch?langId=-1&storeId=10301&catalogId=10701&keyword={0}&sortBy=PriceMax%7C1".format(value)
+
+# 	            line.append(value)
+# 	            col += 1
+# 	        key = 'cat-'
+# 	        key += title.lower().replace(' ', '-').replace('&', '').replace(',', '-').replace('/', '-')
+# 	        key += '-hero-'
+# 	        key += next_monday.strftime("%y%m%d")
+# 	        data[key] = line
+
+# 	output_name = 'us-%s.html' % next_monday.strftime("%y%m%d")
+# 	settings.configure()
+# 	print "reading template from", template_name, "..."
+# 	template_file = open(template_name, "r").read()
+# 	output_file = codecs.open(output_name, mode="w", encoding='utf-8')
+# 	print "filling data into", output_name, "..."
+# 	template = Template(template_file)
+# 	content = template.render(Context({'data': data}))
+# 	output_file.write(content)
+# 	print success
+# 	sys.exit(0)
+""" """
 
 def single_category_can():
 
@@ -395,7 +902,7 @@ def this_week_can():
     print success
     sys.exit(0)
 
-prompt = '==> '
+
 
 print "-" * 62 
 print "*********  Welcome to the Future of Automation  **************" 
