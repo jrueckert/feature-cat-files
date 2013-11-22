@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+
+<link rel="stylesheet" href="http://www.costco.com/dynamic_css?langId=-1&storeId=10301&catalogId=10701" type="text/css"/>
+<link rel="stylesheet" href="http://www.costco.com/wcsstore/CostcoGLOBALSAS/css/ui-lightness/jquery-ui-1.8.10.custom.css" type="text/css"/>
+
+
+<base href="http://www.costco.com" />
+
+<style>
+    .category{
+        width: 747px;
+        margin: 20px 0 0 0;
+    }
+
+    .category-title{
+        clear: both;
+        padding: 7px 0px 7px 0px;
+        margin: 0px 0px 0px 0px;
+        font-family: 'Trebuchet MS';
+        font-size: 1em;
+        font-weight: bold;
+        line-height: 1.1em;
+        text-transform: uppercase;
+        color: #333;
+        background-color: rgb(166, 209, 255);
+        border: solid 1px #d6d6d6;
+
+    }
+
+        .category-title-en{
+        clear: both;
+        padding: 7px 0px 7px 0px;
+        margin: 0px 0px 0px 0px;
+        font-family: 'Trebuchet MS';
+        font-size: 1em;
+        font-weight: bold;
+        line-height: 1.1em;
+        text-transform: uppercase;
+        color: #333;
+        background-color: rgb(116, 189, 6);
+        border: solid 1px #d6d6d6;
+
+    }
+
+        .category-title-fr{
+        clear: both;
+        padding: 7px 0px 7px 0px;
+        margin: 0px 0px 0px 0px;
+        font-family: 'Trebuchet MS';
+        font-size: 1em;
+        font-weight: bold;
+        line-height: 1.1em;
+        text-transform: uppercase;
+        color: #333;
+        background-color: rgb(238, 183, 101);
+        border: solid 1px #d6d6d6;
+
+    }
+
+</style>
+
+</head>
+
+<body bgcolor="#fff" topmargin="0" leftmargin="0" marginheight="0" marginwidth="0">
+
+<div id="main_content_wrapper">
+
+    <center>
+        <div style="width:950px;">
+
+
+        {% for region, row in data.items %}
+            <ul class="category">
+                <li class="category-title">{{ region }}</li>
+
+            </ul>
+            <div style="Clear: Both"></div>
+
+<!-- EN -->
+            <ul class="category">
+                <li class="category-title-en">ENGLISH</li>
+
+            <div class="content">
+<!--start {{ region }} -->
+
+                    <div style="width:748px; height: 345px; margin-bottom: 18px;">
+                        <!-- start hero -->
+                        <div style="margin-right: 9px; float: left;">
+                            <a href="{{ row.0 }}">
+                                <img src="/wcsstore/CostcoCABCCatalogAssetStore/category-pages/{{ row.1 }}"
+                                alt="{{ row.2 }}" width="496" height="345" border="0">
+                            </a>
+                        </div>
+                        <!-- end hero -->
+
+                        <!-- start feature 1 -->
+                        <div style="border-bottom: 1px solid #d6d6d6; margin-bottom: 7px; float: right;">
+                            <a href="{{ row.6 }}">
+                                <img src="/wcsstore/CostcoCABCCatalogAssetStore/category-pages/{{ row.7 }}"
+                                alt="{{ row.8 }}" width="243" height="168" border="0">
+                            </a>
+                        </div>
+                        <!-- end feature 1 -->
+
+                        <!-- start feature 2 -->
+                        <div style="border-bottom: 1px solid #d6d6d6; float: right;">
+                            <a href="{{ row.12 }}">
+                                <img src="/wcsstore/CostcoCABCCatalogAssetStore/category-pages/{{ row.13 }}"
+                                alt="{{ row.14 }}" width="243" height="168" border="0">
+                            </a>
+                        </div>
+                        <!-- end feature 2 -->
+                    </div>
+<!--end {{ region }} -->
+
+            </div><!-- end content -->
+            <div style="Clear: Both"></div>
+
+
+
+<!-- FR- -->
+            <ul class="category">
+                <li class="category-title-fr">FRENCH</li>
+
+            <div class="content">
+<!--start {{ region }} -->
+
+                    <div style="width:748px; height: 345px; margin-bottom: 18px;">
+                        <!-- start hero -->
+                        <div style="margin-right: 9px; float: left;">
+                            <a href="{{ row.3 }}">
+                                <img src="/wcsstore/CostcoCABCCatalogAssetStore/category-pages/{{ row.4 }}"
+                                alt="{{ row.5 }}" width="496" height="345" border="0">
+                            </a>
+                        </div>
+                        <!-- end hero -->
+
+                        <!-- start feature 1 -->
+                        <div style="border-bottom: 1px solid #d6d6d6; margin-bottom: 7px; float: right;">
+                            <a href="{{ row.9 }}">
+                                <img src="/wcsstore/CostcoCABCCatalogAssetStore/category-pages/{{ row.10 }}"
+                                alt="{{ row.11 }}" width="243" height="168" border="0">
+                            </a>
+                        </div>
+                        <!-- end feature 1 -->
+
+                        <!-- start feature 2 -->
+                        <div style="border-bottom: 1px solid #d6d6d6; float: right;">
+                            <a href="{{ row.15 }}">
+                                <img src="/wcsstore/CostcoCABCCatalogAssetStore/category-pages/{{ row.16 }}"
+                                alt="{{ row.17 }}" width="243" height="168" border="0">
+                            </a>
+                        </div>
+                        <!-- end feature 2 -->
+                    </div>
+<!--end {{ region }} -->
+
+            </div><!-- end content -->
+            <div style="Clear: Both"></div>
+
+        {% endfor %}
+
+
+
+
+        </div><!-- end style -->
+    </center>
+<!--END fp-vitamix-schedule-121106-->
+
+
+</div>
+</body>
+</html>
